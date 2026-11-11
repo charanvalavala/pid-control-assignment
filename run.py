@@ -65,6 +65,8 @@ def experiments():
     response("04_d", "Adding D: braking changes the transient", d_runs, 5)
     comparisons = {key: simulate(PID(*g)) for key, g in GAINS.items()}
     report["comparison"] = {key: metrics(run) for key, run in comparisons.items()}
+    report["gain_trials"] = [dict(kp=g[0], ki=g[1], kd=g[2], **metrics(simulate(PID(*g))))
+                             for g in [(100, 80, 6), (100, 80, 12), (100, 80, 24)]]
     response("05_comparison", "P, PI, PD and PID on the same block", comparisons, 8)
     run = comparisons["PI"]
     m = metrics(run)
@@ -156,6 +158,10 @@ def experiments():
         writer.writerow(["controller", "rise_s", "overshoot_percent", "settling_s", "error_at_12s_m"])
         for k, v in report["comparison"].items():
             writer.writerow([k, *v.values()])
+    with (OUTPUT / "gain_trials.csv").open("w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["kp_N_per_m", "ki_N_per_m_s", "kd_N_s_per_m", "rise_s", "overshoot_percent", "settling_s", "error_at_12s_m"])
+        writer.writerows(row.values() for row in report["gain_trials"])
     return report
 
 

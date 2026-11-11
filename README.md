@@ -15,6 +15,8 @@ I started with the force balance `x'' + 10x' + 20x = u`. I compared P, PI, PD an
 
 The plant is integrated with fourth-order Runge-Kutta. The controller holds its output constant between updates, and the plant integration step is never larger than 0.002 s. This keeps the slow-update experiment separate from large integration-step errors. Noise is uniform within +/-1 mm, using seed 17.
 
+The PDF includes one worked controller update and a small comparison of PID gains explaining the final choice. The gain comparison is saved in `results/gain_trials.csv`; it uses the same unconstrained, noise-free conditions as the P/PI/PD/PID comparison.
+
 ## Setup
 
 Use Python 3.11 or newer. The submission was checked with Python 3.14.3. Run these commands in the repository folder.

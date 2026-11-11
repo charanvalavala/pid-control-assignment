@@ -10,6 +10,8 @@ The controller and plant are separate Python modules. The same controller can ru
 
 The P-only positions matched the calculated values to six decimal places. Integral action supplied the 20 N needed to hold the spring at 1 m. Adding derivative action to the PI controller reduced the unconstrained overshoot from 9.56% to zero for the selected gains.
 
+With Kp = 100 and Ki = 80, I also compared Kd = 6, 12 and 24. Kd = 12 gave the shortest settling time of these three in the unconstrained test. Kd = 6 rose faster but took longer to finish approaching the target; Kd = 24 gave 2.52% overshoot.
+
 Conditional integration reduced overshoot from 24.98% to zero in the saturated windup test. Filtering the derivative reduced steady force variation from 5.00 N to 0.38 N under the same sensor noise. With all fixes enabled, the final controller settled in 2.71 s with a 30 N force limit.
 
 ## What did not work well
