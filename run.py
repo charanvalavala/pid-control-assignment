@@ -78,7 +78,7 @@ def experiments():
         ax.plot(run["t"][j], level, "ko")
     peak = np.argmax(run["x"])
     ax.annotate(f"Overshoot: {m['overshoot']:.2f}%", (run["t"][peak], run["x"][peak]), (2.5, 1.18), arrowprops=dict(arrowstyle="->"))
-    ax.text(0.7, 0.43, f"10-90% rise: {m['rise']:.3f} s")
+    ax.text(0.7, 0.43, f"Rise from 10% to 90%: {m['rise']:.3f} s")
     ax.axvline(m["settling"], ls=":", color="green", label=f"Settling: {m['settling']:.3f} s")
     ax.annotate(f"Final error at 12 s: {m['final_error']:.5f} m", (12, run["x"][-1]), (5, 0.75), arrowprops=dict(arrowstyle="->"))
     style(ax, "Four measures of a step response")

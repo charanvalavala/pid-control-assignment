@@ -5,7 +5,7 @@ A short explanation of PID control, with Python simulations of a 1 kg mass conne
 ## Submission files
 
 - [Learning PID control (PDF, 13 pages)](output/pdf/pid_control.pdf)
-- [Brief write-up](WRITEUP.md)
+- [Brief project summary](WRITEUP.md)
 - [Controller code](pid.py)
 - [Results and measurements](results/)
 
@@ -13,9 +13,9 @@ A short explanation of PID control, with Python simulations of a 1 kg mass conne
 
 I started with the force balance `x'' + 10x' + 20x = u`. I compared P, PI, PD and PID, then tested force saturation, sensor noise, derivative kick and slower controller updates. A second plant, `1/(s+1)^3`, is used for Ziegler-Nichols tuning.
 
-The plant is integrated with fourth-order Runge-Kutta. The controller holds its output constant between updates, and the plant integration step is never larger than 0.002 s. This keeps the slow-update experiment separate from large integration-step errors. Noise is uniform within +/-1 mm, using seed 17.
+I used the Runge-Kutta method of order four to simulate the plant. The controller holds the force constant between updates, and the plant takes steps of 0.002 s or less. That lets me test slow controller updates without also making the simulation less accurate. Noise is uniform within +/-1 mm, using seed 17.
 
-The PDF includes one worked controller update and a small comparison of PID gains explaining the final choice. The gain comparison is saved in `results/gain_trials.csv`; it uses the same unconstrained, noise-free conditions as the P/PI/PD/PID comparison.
+The PDF includes one worked controller update and a small comparison of PID gains explaining the final choice. The gain comparison in `results/gain_trials.csv` uses the same conditions as the P, PI, PD and PID comparison. Both runs omit noise and the force limit.
 
 ## Setup
 
@@ -44,10 +44,10 @@ The final command recreates all 13 figures, the CSV and JSON measurements in `re
 | File | Purpose |
 | --- | --- |
 | `pid.py` | PID state, output limits, conditional integration and filtered derivative |
-| `simulation.py` | Both plant models, held-input integration and response measures |
+| `simulation.py` | Both plant models, integration with constant force between updates and response measures |
 | `run.py` | Experiments, plots and saved measurements |
 | `report.py` | Builds the PDF from the experiment results |
-| `tests/test_pid.py` | Checks equations, saturation, noise, kick, repeatability and time-step convergence |
+| `tests/test_pid.py` | Checks equations, saturation, noise, kick, repeatability and convergence with smaller time steps |
 
 To try different gains, change `GAINS` in `run.py`. `simulate` also accepts `mass`, `dt`, `noise`, `duration`, `seed` and a target function. Change `limits` and `tau` on the `PID` object to test a different actuator limit or derivative filter. The separate windup demonstration uses `(100, 200, 8)` to make the problem easy to see.
 
@@ -62,7 +62,7 @@ result = simulate(controller, mass=1.0, dt=0.002, noise=0.001)
 print(metrics(result))
 ```
 
-`metrics` is for a step from rest to a constant target of 1. Rise time is the first 10-90% crossing interval; overshoot is relative to the target; settling uses a +/-2% band through the rest of the run. `None` means the threshold was not reached in the simulated time. Final error is measured at the end of the run, rather than assumed to be the infinite-time error. For the second plant, the error is dimensionless rather than metres.
+`metrics` is for a step from rest to a constant target of 1. Rise time runs from the first crossing of 10% of the target to the first crossing of 90%. Overshoot is measured relative to the target. The response settles once it stays within 2% of the target for the rest of the run. `None` means the threshold was not reached in the simulated time. Final error is measured at the end of the run. For the second plant, the error is dimensionless rather than metres.
 
 ## Main result
 
@@ -85,7 +85,7 @@ These values describe this simulated model. The unconstrained comparison has dif
 python -m unittest discover -s tests -v
 ```
 
-Use the virtual environment's Python as in the setup commands. The nine checks cover the calculated P-only equilibrium, integral holding force, anti-windup and recovery, output bounds, derivative kick, filtering, repeatability, convergence as the update interval shrinks, and invalid time steps.
+Use the virtual environment's Python as in the setup commands. The nine checks cover the calculated equilibrium with P alone, integral holding force, anti-windup and recovery, output bounds, derivative kick, filtering, repeatability, convergence as the update interval shrinks, and invalid time steps.
 
 ## References
 
